@@ -14,11 +14,29 @@ public class GameManager : MonoBehaviour
     private float meteorInterval_ = 1;
 
     private float meteorTimer_;
-    public void AddScore(int point) { }
-    public void Damage(int point) { }
+    public void AddScore(int point)
+    {
+        score_ += point;
+        scoreText_.SetScore(score_);
+    }
+    public void Damage(int point)
+    {
+        life_ -= point;
+        UpdateLifeBar();
+    }
 
     [SerializeField]
     private List<Transform> spawnPositions_;
+
+    [SerializeField, Header("ScoreUISettings")]
+    private ScoreText scoreText_;
+    private int score_;
+
+    [SerializeField, Header("LifeUISettings")]
+    private LifeBar lifeBar_;
+    [SerializeField]
+    private float maxLife_ = 10;
+    private float life_;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -34,6 +52,7 @@ public class GameManager : MonoBehaviour
                 "spawnPositions_にNUllが含まれています"
                 );
         }
+        ResetLife();
     }
     private void GenerateExplosion()
     {
@@ -71,4 +90,14 @@ public class GameManager : MonoBehaviour
         meteor.Setup(ground_, this, explosionPrefab_);
     }
 
+    private void ResetLife()
+    {
+        life_ = maxLife_;
+        UpdateLifeBar();
+    }
+    private void UpdateLifeBar()
+    {
+        float lifeRatio = Mathf.Clamp01(life_ / maxLife_);
+        lifeBar_.SetGaugeRatio(lifeRatio);
+    }
 }
